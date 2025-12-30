@@ -1,23 +1,20 @@
+import dotenv from "dotenv";
+dotenv.config();
 
-
-require("dotenv").config();
-const express = require("express"); //make server
-const cors = require("cors");   //middleware to enable CORS
-const { parse } = require("dotenv");
-const mongoose = require("mongoose");
-const Subscriber = require("./models/Subscriber");
-const sendWelcomeEmail = require("./utils/sendEmail");
-
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import Subscriber from "./models/Subscriber.js";
+import sendWelcomeEmail from "./utils/sendEmail.js";
 
 const app = express();
 
-app.use(cors()); //enable CORS for all routes
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended:true})); //parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
-//constant to store API key
+// API key
 const API_KEY = process.env.VITE_GNEWS_API_KEY;
-
 
 /* 🔹 MONGODB CONNECTION */
 mongoose
@@ -25,27 +22,21 @@ mongoose
   .then(() => console.log("MongoDB connected ✅"))
   .catch((err) => console.log("MongoDB error ❌", err));
 
-//fetch news function
+/* 🔹 FETCH NEWS FUNCTION */
 async function fetchNews(url, res) {
   try {
     const response = await fetch(url);
     const data = await response.json();
 
-    if (data.articles && data.articles.length > 0) {
-      res.json({
-        status: 200,
-        success: true,
-        message: "Successfully fetched news articles",
-        data: data,
-      });
-    } else {
-      res.json({
-        status: 200,
-        success: true,
-        message: "No news articles found",
-        data: data,
-      });
-    }
+    res.json({
+      status: 200,
+      success: true,
+      message:
+        data.articles && data.articles.length > 0
+          ? "Successfully fetched news articles"
+          : "No news articles found",
+      data,
+    });
   } catch (error) {
     res.status(500).json({
       status: 500,
@@ -56,69 +47,53 @@ async function fetchNews(url, res) {
   }
 }
 
+/* 🔹 ALL NEWS */
+app.get("/all-news", (req, res) => {
+  const pageSize = parseInt(req.query.pageSize) || 40;
+  const page = parseInt(req.query.page) || 1;
 
+  const keywords = [
+    "world",
+    "news",
+    "global",
+    "breaking",
+    "headline",
+    "international",
+    "update",
+    "report",
+    "market",
+    "economy",
+    "stock",
+    "finance",
+  ];
 
-/*//define routes to get news articles
-app.get("/all-news",(req,res)=>{
-    let pageSize=parseInt(req.query.pageSize) || 40;
-    let page=parseInt(req.query.page) || 1;
-    const category = req.query.category || "general";
-    
-    const categoryKeywords = {
-  technology: ["apple", "google", "microsoft", "ai"],
-  business: ["market", "economy", "stock", "finance"],
-  sports: ["cricket", "football", "fifa"],
-  health: ["medical", "hospital", "vaccine"],
-  entertainment: ["movie", "netflix", "music"],
-  science: ["space", "nasa", "research", "innovation", "discovery"],
-  general: ["world", "news", "global", "breaking","headline","international","update","report", "market","economy", "stock","finance"]
-};
-
-
- const keywords = categoryKeywords[category] || categoryKeywords.general;
- const keyword = keywords[(page - 1) % keywords.length];   //rotation logic
-
-
-  const url = `https://gnews.io/api/v4/search?q=${keyword}&lang=en&max=${pageSize}&page=${page}&apikey=${API_KEY}`;
-  fetchNews(url,res);   //fetch url and respond us
-});*/
-
-//define routes to get news articles
-app.get("/all-news",(req,res)=>{
-    let pageSize=parseInt(req.query.pageSize) || 40;
-    let page=parseInt(req.query.page) || 1;
-    const categoryKeywords={
-      general: ["world", "news", "global", "breaking","headline","international","update","report", "market","economy", "stock","finance"]
-};
-  const keywords = categoryKeywords["general"];
   const keyword = keywords[(page - 1) % keywords.length];
 
   const url = `https://gnews.io/api/v4/search?q=${keyword}&lang=en&max=${pageSize}&page=${page}&apikey=${API_KEY}`;
-  fetchNews(url,res);   //fetch url and respond us
+  fetchNews(url, res);
 });
 
-// route for top headlines
-app.options("/top-headlines", cors());
-app.get("/top-headlines",(req,res)=>{
-  let pageSize=parseInt(req.query.pageSize) || 80;
-  let page=parseInt(req.query.page) || 1;
+/* 🔹 TOP HEADLINES */
+app.get("/top-headlines", (req, res) => {
+  const pageSize = parseInt(req.query.pageSize) || 80;
+  const page = parseInt(req.query.page) || 1;
   const country = req.query.country || "us";
+
   const url = `https://gnews.io/api/v4/top-headlines?country=${country}&lang=en&max=${pageSize}&page=${page}&apikey=${API_KEY}`;
-  fetchNews(url,res);   //fetch url and respond us
+  fetchNews(url, res);
 });
 
-// route for country specific news
-app.options("/country/:iso", cors());
-app.get("/country/:iso",(req,res)=>{
-  let pageSize=parseInt(req.query.pageSize) || 80;
-  let page=parseInt(req.query.page) || 1;
+/* 🔹 COUNTRY NEWS */
+app.get("/country/:iso", (req, res) => {
+  const pageSize = parseInt(req.query.pageSize) || 80;
+  const page = parseInt(req.query.page) || 1;
   const countryISO = req.params.iso || "us";
+
   const url = `https://gnews.io/api/v4/top-headlines?country=${countryISO}&lang=en&max=${pageSize}&page=${page}&apikey=${API_KEY}`;
-  fetchNews(url,res);   //fetch url and respond us
-})
+  fetchNews(url, res);
+});
 
-
-/* 🔹 SUBSCRIBE ROUTE (⭐ NEW ⭐) */
+/* 🔹 SUBSCRIBE */
 app.post("/subscribe", async (req, res) => {
   try {
     const { email } = req.body;
@@ -131,8 +106,7 @@ app.post("/subscribe", async (req, res) => {
     }
 
     await Subscriber.create({ email });
-
-    await sendWelcomeEmail(email); // 👈 EMAIL SENT
+    await sendWelcomeEmail(email);
 
     res.json({
       success: true,
@@ -146,11 +120,8 @@ app.post("/subscribe", async (req, res) => {
   }
 });
 
-
-
-// set port
+/* 🔹 START SERVER */
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, ()=>{
-    console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
