@@ -11,7 +11,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ip-address": "^8.1.0",
-    "mongoose": "^7.6.3",
+    "mongoose": "7.5.2",
     "nodemailer": "^6.9.11"
   }
 }
