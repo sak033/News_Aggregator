@@ -1,14 +1,15 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
 const sendWelcomeEmail = async (toEmail) => {
+  // create transporter INSIDE function
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
   await transporter.sendMail({
     from: `"News Aggregator" <${process.env.EMAIL_USER}>`,
     to: toEmail,

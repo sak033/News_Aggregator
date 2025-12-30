@@ -95,30 +95,48 @@ app.get("/country/:iso", (req, res) => {
 
 /* 🔹 SUBSCRIBE */
 app.post("/subscribe", async (req, res) => {
-  try {
-    const { email } = req.body;
+  const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Email is required",
+    });
+  }
+
+  try {
+    // 1️⃣ Save email first
+    await Subscriber.create({ email });
+
+    // 2️⃣ Respond immediately (IMPORTANT)
+    res.status(201).json({
+      success: true,
+      message: "Subscribed successfully 🎉",
+    });
+
+    // 3️⃣ Send email in background (non-blocking)
+    sendWelcomeEmail(email).catch(err => {
+      console.error("Email failed:", err.message);
+    });
+
+  } catch (error) {
+
+    if (error.code === 11000) {
+      return res.status(409).json({
         success: false,
-        message: "Email is required",
+        message: "Already subscribed",
       });
     }
 
-    await Subscriber.create({ email });
-    await sendWelcomeEmail(email);
+    console.error("Subscribe error:", error);
 
-    res.json({
-      success: true,
-      message: "Subscribed successfully 🎉 Check your email!!",
-    });
-  } catch (error) {
-    res.status(409).json({
+    return res.status(500).json({
       success: false,
-      message: "Already subscribed",
+      message: "Something went wrong. Please try again later.",
     });
   }
 });
+
 
 /* 🔹 START SERVER */
 const PORT = process.env.PORT || 3000;
