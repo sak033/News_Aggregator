@@ -3,7 +3,6 @@
 require("dotenv").config();
 const express = require("express"); //make server
 const cors = require("cors");   //middleware to enable CORS
-const axios = require("axios"); //send requests to external APIs
 const { parse } = require("dotenv");
 const mongoose = require("mongoose");
 const Subscriber = require("./models/Subscriber");
@@ -27,35 +26,36 @@ mongoose
   .catch((err) => console.log("MongoDB error ❌", err));
 
 //fetch news function
-function fetchNews(url, res) {
-  axios.get(url)
-  .then(response=>{
-    if (response.data.articles && response.data.articles.length > 0) {
+async function fetchNews(url, res) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-        res.json({
-            status:200,
-            success: true,
-            message:"Successfully fetched news articles",
-            data: response.data
-        });
+    if (data.articles && data.articles.length > 0) {
+      res.json({
+        status: 200,
+        success: true,
+        message: "Successfully fetched news articles",
+        data: data,
+      });
+    } else {
+      res.json({
+        status: 200,
+        success: true,
+        message: "No news articles found",
+        data: data,
+      });
     }
-    else{
-        res.json({
-            status:200,
-            success:true,
-            message:"No news articles found",
-
-        })
-    }
-  }).catch(error=>{
-    res.json({
-        status:500,
-        success:false,
-        message:"Failed to fetch news articles",
-        error: error.message
-    })
-  })
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      success: false,
+      message: "Failed to fetch news articles",
+      error: error.message,
+    });
+  }
 }
+
 
 
 /*//define routes to get news articles
