@@ -93,21 +93,33 @@ const renderSection = (section) => {
         </div>
 
         <aside className="toi-side">
-          {articles.slice(1, 6).map((a) => (
-            <h4 key={a._id}>{a.title}</h4>
-          ))}
-        </aside>
+  {articles.slice(1, 6).map((a) => (
+    <Link
+      key={a._id}
+      to={`/article/${a._id}`}
+      className="toi-side-item"
+    >
+      <h4>{a.title}</h4>
+    </Link>
+  ))}
+</aside>
+
       </section>
 
       {/* COLUMNS */}
       <section className="toi-columns">
-        {articles.slice(6).map((a) => (
-          <article key={a._id} className="toi-article">
-            <h4>{a.title}</h4>
-            <p>{a.description}</p>
-          </article>
-        ))}
-      </section>
+  {articles.slice(6).map((a) => (
+    <Link
+      key={a._id}
+      to={`/article/${a._id}`}
+      className="toi-article"
+    >
+      <h4>{a.title}</h4>
+      <p>{a.description}</p>
+    </Link>
+  ))}
+</section>
+
     </div>
   );
 };

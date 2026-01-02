@@ -70,7 +70,7 @@ const ArticlePage = () => {
 
       <p>{article.description}</p>
 
-      <a href={article.url} target="_blank" rel="noreferrer">
+      <a href={article.url} target="_blank" rel="noreferrer" className="back-btn article-btn">
         Read original source →
       </a>
     </div>
