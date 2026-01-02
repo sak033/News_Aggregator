@@ -51,7 +51,8 @@ function CountryNews() {
       {error && (
         <div className="text-red-500 mb-4 text-center">{error}</div>
       )}
-       
+     
+     <div className="page-offset  page-spacing">
       <div className="my-10 cards  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-10 px-6">
         {isLoading ? (
           <Loader />
@@ -90,6 +91,7 @@ function CountryNews() {
           </button>
         </div>
       )}
+      </div>
     </>
   );
 }

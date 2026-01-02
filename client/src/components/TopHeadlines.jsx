@@ -44,7 +44,7 @@ function TopHeadlines() {
   return (
     <>
       {error && <p className="text-red-500 text-center">{error}</p>}
-
+       <div className="page-offset  page-spacing">
       <div className="my-10 cards  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-10 px-6">
         {isLoading ? (
           <Loader />
@@ -81,6 +81,7 @@ function TopHeadlines() {
           </button>
         </div>
       )}
+      </div>
     </>
   );
 }

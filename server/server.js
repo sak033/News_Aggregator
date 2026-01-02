@@ -6,6 +6,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import Subscriber from "./models/Subscriber.js";
 import sendWelcomeEmail from "./utils/sendEmail.js";
+import ContactMessage from "./models/ContactMessage.js";
+import sendContactEmail from "./utils/sendContactEmail.js";
+import EpaperEdition from "./models/EpaperEdition.js";
+
 
 const app = express();
 
@@ -14,13 +18,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API key
-const API_KEY = process.env.VITE_GNEWS_API_KEY;
+const API_KEY = process.env.GNEWS_API_KEY;
 
 /* 🔹 MONGODB CONNECTION */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected ✅"))
   .catch((err) => console.log("MongoDB error ❌", err));
+
+function guessCategory(text = "") {
+  const t = text.toLowerCase();
+
+  if (t.includes("sport") || t.includes("match") || t.includes("cricket")) {
+    return "sports";
+  }
+  if (t.includes("business") || t.includes("market") || t.includes("economy")) {
+    return "business";
+  }
+  if (t.includes("politic") || t.includes("government") || t.includes("election")) {
+    return "politics";
+  }
+  if (t.includes("tech") || t.includes("ai") || t.includes("software")) {
+    return "technology";
+  }
+
+  return "general";
+}
+
+
 
 /* 🔹 FETCH NEWS FUNCTION */
 async function fetchNews(url, res) {
@@ -93,6 +118,66 @@ app.get("/country/:iso", (req, res) => {
   fetchNews(url, res);
 });
 
+/*  E-PAPERS */
+app.get("/epaper-news", async (req, res) => {
+  const category = req.query.category || "general";
+
+  const url = `https://gnews.io/api/v4/top-headlines?category=${category.toLowerCase()}&lang=en&max=25&apikey=${API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    res.json(data.articles || []);
+  } catch (err) {
+    res.status(500).json([]);
+  }
+});
+
+
+app.get("/epaper/today", async (req, res) => {
+  const today = new Date().toISOString().split("T")[0];
+
+  try {
+    const existingEdition = await EpaperEdition.findOne({ date: today });
+    if (existingEdition) {
+      return res.json({ source: "cache", edition: existingEdition });
+    }
+
+    const categories = ["general", "business", "sports", "technology", "politics"];
+    let allArticles = [];
+
+    for (const cat of categories) {
+      const url = `https://gnews.io/api/v4/search?q=${cat}&lang=en&max=15&apikey=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const normalized = (data.articles || []).map(a => ({
+        title: a.title,
+        description: a.description,
+        image: a.image,
+        url: a.url,
+        source: a.source?.name,
+        category: cat,   // 🔥 YAHI MAIN FIX
+      }));
+
+      allArticles.push(...normalized);
+    }
+
+    const newEdition = await EpaperEdition.create({
+      date: today,
+      articles: allArticles,
+    });
+
+    res.json({ source: "fresh", edition: newEdition });
+
+  } catch (err) {
+    console.error("Epaper error:", err);
+    res.status(500).json({ error: "Failed to generate edition" });
+  }
+});
+
+
+
 /* 🔹 SUBSCRIBE */
 app.post("/subscribe", async (req, res) => {
   const { email } = req.body;
@@ -136,6 +221,65 @@ app.post("/subscribe", async (req, res) => {
     });
   }
 });
+
+
+app.post("/contact", async (req, res) => {
+  try {
+    const { name, email, inquiryType, subject, message } = req.body;
+
+    if (!name || !email || !inquiryType || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // A️⃣ Save to MongoDB
+    await ContactMessage.create({
+      name,
+      email,
+      inquiryType,
+      subject,
+      message,
+    });
+
+    // B️⃣ Send email
+    await sendContactEmail({ name, email, inquiryType, subject, message });
+
+    return res.status(201).json({
+      success: true,
+      message: "Message sent successfully ✅",
+    });
+
+  } catch (error) {
+    console.error("Contact error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+});
+
+
+/* Search Icon result*/
+app.get("/search-news", async (req, res) => {
+  const q = req.query.q;
+
+  const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(
+    q
+  )}&lang=en&max=20&apikey=${API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    res.json({ articles: data.articles || [] });
+  } catch (err) {
+    res.status(500).json({ articles: [] });
+  }
+});
+
+
 
 
 /* 🔹 START SERVER */

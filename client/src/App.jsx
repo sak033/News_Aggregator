@@ -1,34 +1,54 @@
-import React from 'react'
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Header from './components/Header'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import CountryNews from './components/CountryNews'
-import News from './components/News'
-import TopHeadlines from './components/TopHeadlines'
-import Footer from './components/Footer'
+import React from "react";
+import { useState } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
-export function App() {
-  const [count, setCount] = useState(0)
+import "./App.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+
+import News from "./components/News";
+import TopHeadlines from "./components/TopHeadlines";
+import CountryNews from "./components/CountryNews";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
+import EPaper from "./pages/EPaper";
+import ArticlePage from "./pages/ArticlePage";
+import SearchResults from "./pages/SearchResults";
+
+/* 👇 Layout wrapper */
+function AppLayout() {
+  const location = useLocation();
+
+  // 👇 Hide header/footer ONLY for e-paper
+  const isEPaper = location.pathname === "/e-paper";
 
   return (
-    <>
-      <div >
-        <BrowserRouter>
-        <Header/>
-         
-        <Routes>
-          <Route path="/" element={<News/>}/>
-          <Route path="/top-headlines/:country" element={<TopHeadlines/>}/>
-          <Route path="/country/:iso" element={<CountryNews/>}/>
-        </Routes>
-        <Footer />
-        </BrowserRouter>
-      </div>
-    </>
-  )
+    <div className="app-layout">
+      {!isEPaper && <Header />}
+
+      <Routes>
+        <Route path="/" element={<News />} />
+        <Route path="/top-headlines/:country" element={<TopHeadlines />} />
+        <Route path="/country/:iso" element={<CountryNews />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/e-paper" element={<EPaper />} />
+        
+        <Route path="/article/:id" element={<ArticlePage />} />
+        <Route path="/search" element={<SearchResults />} />
+
+
+      </Routes>
+
+      {!isEPaper && <Footer />}
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
+  );
+}
