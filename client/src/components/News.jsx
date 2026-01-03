@@ -27,7 +27,7 @@ function News() {
     setIsLoading(true);
     setError(null);
 
-    fetch(`http://localhost:3000/all-news?page=${page}&pageSize=${pageSize}`)
+    fetch(`https://news-aggregator-api-bm7g.onrender.com/all-news?page=${page}&pageSize=${pageSize}`)
 
       .then((response) => {
         if (!response.ok) {

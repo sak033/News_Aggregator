@@ -25,7 +25,7 @@ export default function Footer() {
       return;
     }
 
-    const res = await fetch("http://localhost:3000/subscribe", {
+    const res = await fetch("https://news-aggregator-api-bm7g.onrender.com/subscribe", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

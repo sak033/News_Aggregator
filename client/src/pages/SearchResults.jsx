@@ -15,7 +15,7 @@ const SearchResults = () => {
     const fetchResults = async () => {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:3000/search-news?q=${query}`
+        `https://news-aggregator-api-bm7g.onrender.com/search-news?q=${query}`
       );
       const data = await res.json();
       setResults(data.articles || []);

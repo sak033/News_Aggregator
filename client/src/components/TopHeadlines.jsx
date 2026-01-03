@@ -22,7 +22,7 @@ function TopHeadlines() {
 
     const categoryParam = category ? `&category=${category}` : "";
 
-    fetch(`http://localhost:3000/top-headlines?lang=en${categoryParam}&page=${page}&pageSize=${pageSize}`)
+    fetch(`https://news-aggregator-api-bm7g.onrender.com/top-headlines?lang=en${categoryParam}&page=${page}&pageSize=${pageSize}`)
 
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");

@@ -28,7 +28,7 @@ function CountryNews() {
     setError(null);
 
     fetch(
-  `http://localhost:3000/country/${iso}?page=${page}&pageSize=${pageSize}`
+  `https://news-aggregator-api-bm7g.onrender.com/country/${iso}?page=${page}&pageSize=${pageSize}`
 )
 
       .then((response) => {

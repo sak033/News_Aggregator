@@ -11,7 +11,7 @@ const ArticlePage = () => {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const res = await fetch("http://localhost:3000/epaper/today");
+        const res = await fetch("https://news-aggregator-api-bm7g.onrender.com/epaper/today");
         const data = await res.json();
 
         // 🔐 SAFETY CHECK
