@@ -328,7 +328,7 @@ ul li ul li a:hover {
     transform: translateY(-2px);
     transition: transform 0.2s ease-in-out;
     
-    box-shadow: 0 0 11px grey; 
+    box-shadow: 0 25px 50px rgba(78, 52, 128, 0.372);
 }
 
 .everything-card-img {

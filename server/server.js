@@ -11,6 +11,8 @@ import sendContactEmail from "./utils/sendContactEmail.js";
 import EpaperEdition from "./models/EpaperEdition.js";
 
 
+
+
 const app = express();
 
 app.use(cors());
@@ -278,6 +280,7 @@ app.get("/search-news", async (req, res) => {
     res.status(500).json({ articles: [] });
   }
 });
+
 
 
 

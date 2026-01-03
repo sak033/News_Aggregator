@@ -10,12 +10,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-
+    "ip-address": "7.1.0",
     "mongoose": "^7.6.3",
-
-
     "nodemailer": "^6.9.11",
-    "socks": "2.7.1",
-    "ip-address": "7.1.0"
+    "openai": "^6.15.0",
+    "socks": "2.7.1"
   }
 }
