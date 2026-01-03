@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./epaper.css";
+import "./EPaper.css";
 import { Link } from "react-router-dom";
 
 
