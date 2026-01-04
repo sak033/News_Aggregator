@@ -10,13 +10,14 @@
 
   "scripts": {
   "dev": "vite",
-    "build": "vite build",
-
+  "build": "vite build",
+  "start": "node server.js",
   "lint": "eslint .",
   "preview": "vite preview"
 }
 ,
   "dependencies": {
+    "express": "^4.19.2",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
