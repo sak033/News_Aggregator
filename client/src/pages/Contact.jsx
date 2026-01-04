@@ -46,7 +46,7 @@ const handleSubmit = async (e) => {
     setLoading(true);
     setStatus(null);
 
-    const res = await fetch("http://localhost:3000/contact", {
+    const res = await fetch("https://news-aggregator-api-bm7g.onrender.com/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
