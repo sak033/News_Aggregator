@@ -1,47 +1,47 @@
 import nodemailer from "nodemailer";
 
-
-
-
-
-const sendContactEmail = async ({ name, email, inquiryType, subject, message }) => {
-
-    const transporter = nodemailer.createTransport({
-  service: "gmail",
+const transporter = nodemailer.createTransport({
+  host: process.env.BREVO_HOST,
+  port: process.env.BREVO_PORT,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
   },
 });
 
-  // Email to YOU (admin)
+export default async function sendContactEmail({
+  name,
+  email,
+  inquiryType,
+  subject,
+  message,
+}) {
+  // OWNER EMAIL
   await transporter.sendMail({
-    from: `"Contact Form" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER,
-    subject: `📩 New Contact Message: ${subject}`,
+    from: `"News Aggregator" <${process.env.BREVO_USER}>`,
+    to: process.env.OWNER_EMAIL,
+    subject: `📩 New Contact: ${subject}`,
     html: `
       <h3>New Contact Message</h3>
       <p><b>Name:</b> ${name}</p>
       <p><b>Email:</b> ${email}</p>
-      <p><b>Inquiry:</b> ${inquiryType}</p>
+      <p><b>Type:</b> ${inquiryType}</p>
       <p><b>Message:</b></p>
       <p>${message}</p>
     `,
   });
 
-  // Optional auto-reply to user
+  // USER CONFIRMATION
   await transporter.sendMail({
-    from: `"News Aggregator" <${process.env.EMAIL_USER}>`,
+    from: `"News Aggregator" <${process.env.BREVO_USER}>`,
     to: email,
     subject: "We received your message ✅",
     html: `
       <p>Hi ${name},</p>
-      <p>Thanks for contacting News Aggregator.</p>
-      <p>We have received your message and will get back to you soon.</p>
+      <p>Thanks for contacting us. We received your message and will reply soon.</p>
       <br/>
-      <p>— Team News Aggregator</p>
+      <p>— News Aggregator Team</p>
     `,
   });
-};
-
-export default sendContactEmail;
+}
