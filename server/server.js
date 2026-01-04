@@ -236,7 +236,7 @@ app.post("/contact", async (req, res) => {
       });
     }
 
-    // A️⃣ Save to MongoDB
+    // 1️⃣ Save to MongoDB
     await ContactMessage.create({
       name,
       email,
@@ -245,23 +245,28 @@ app.post("/contact", async (req, res) => {
       message,
     });
 
-    // B️⃣ Send email
-    await sendContactEmail({ name, email, inquiryType, subject, message });
-
-    return res.status(201).json({
+    // 2️⃣ Respond SUCCESS immediately
+    res.status(201).json({
       success: true,
       message: "Message sent successfully ✅",
     });
 
+    // 3️⃣ Send email in background
+    sendContactEmail({ name, email, inquiryType, subject, message })
+      .then(() => console.log("📧 Contact email sent"))
+      .catch(err =>
+        console.error("❌ Email failed:", err.message)
+      );
+
   } catch (error) {
     console.error("Contact error:", error);
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Something went wrong. Please try again later.",
+      message: "Server error. Please try again later.",
     });
   }
 });
+
 
 
 /* Search Icon result*/
