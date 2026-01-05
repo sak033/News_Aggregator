@@ -43,7 +43,7 @@ Resend (Transactional Emails)
 
 ## Demo Video
 
-https://drive.google.com/xxxx
+https://drive.google.com/file/d/1YVxOTwuPUhDOuJy-koVWz7UlApbeDbwC/view?usp=drive_link
 
 ## Key Learnings
 
@@ -60,3 +60,12 @@ Debugging ES Modules and async flows
 Implementing transactional email systems
 
 Understanding sandbox vs production email rules
+
+## 👩‍💻 Author
+
+Sakshi Kuthe
+Email: sakshikuthe336@gmail.com
+
+GitHub: https://github.com/sak033
+
+LinkedIn: https://www.linkedin.com/in/sakshi-kuthe-49869124b
