@@ -12,6 +12,9 @@ import EpaperEdition from "./models/EpaperEdition.js";
 
 
 
+console.log("RESEND KEY:", process.env.RESEND_API_KEY ? "LOADED" : "MISSING");
+
+
 
 const app = express();
 
@@ -22,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // API key
 const API_KEY = process.env.GNEWS_API_KEY;
 
-/* 🔹 MONGODB CONNECTION */
+/* MONGODB CONNECTION */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected ✅"))
@@ -49,7 +52,7 @@ function guessCategory(text = "") {
 
 
 
-/* 🔹 FETCH NEWS FUNCTION */
+/* FETCH NEWS FUNCTION */
 async function fetchNews(url, res) {
   try {
     const response = await fetch(url);
@@ -74,7 +77,7 @@ async function fetchNews(url, res) {
   }
 }
 
-/* 🔹 ALL NEWS */
+/*  ALL NEWS */
 app.get("/all-news", (req, res) => {
   const pageSize = parseInt(req.query.pageSize) || 40;
   const page = parseInt(req.query.page) || 1;
@@ -100,7 +103,7 @@ app.get("/all-news", (req, res) => {
   fetchNews(url, res);
 });
 
-/* 🔹 TOP HEADLINES */
+/* TOP-HEADLINES */
 app.get("/top-headlines", (req, res) => {
   const pageSize = parseInt(req.query.pageSize) || 80;
   const page = parseInt(req.query.page) || 1;
@@ -110,7 +113,7 @@ app.get("/top-headlines", (req, res) => {
   fetchNews(url, res);
 });
 
-/* 🔹 COUNTRY NEWS */
+/*  COUNTRY NEWS */
 app.get("/country/:iso", (req, res) => {
   const pageSize = parseInt(req.query.pageSize) || 80;
   const page = parseInt(req.query.page) || 1;
@@ -159,7 +162,7 @@ app.get("/epaper/today", async (req, res) => {
         image: a.image,
         url: a.url,
         source: a.source?.name,
-        category: cat,   // 🔥 YAHI MAIN FIX
+        category: cat,   
       }));
 
       allArticles.push(...normalized);
@@ -180,7 +183,7 @@ app.get("/epaper/today", async (req, res) => {
 
 
 
-/* 🔹 SUBSCRIBE */
+/*  SUBSCRIBE */
 app.post("/subscribe", async (req, res) => {
   const { email } = req.body;
 
@@ -192,16 +195,16 @@ app.post("/subscribe", async (req, res) => {
   }
 
   try {
-    // 1️⃣ Save email first
+    // Save email first
     await Subscriber.create({ email });
 
-    // 2️⃣ Respond immediately (IMPORTANT)
+    // Respond immediately (IMPORTANT)
     res.status(201).json({
       success: true,
       message: "Subscribed successfully 🎉",
     });
 
-    // 3️⃣ Send email in background (non-blocking)
+    // Send email in background (non-blocking)
     sendWelcomeEmail(email).catch(err => {
       console.error("Email failed:", err.message);
     });
@@ -229,14 +232,6 @@ app.post("/contact", async (req, res) => {
   try {
     const { name, email, inquiryType, subject, message } = req.body;
 
-    if (!name || !email || !inquiryType || !subject || !message) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    // 1️⃣ Save to MongoDB
     await ContactMessage.create({
       name,
       email,
@@ -245,26 +240,29 @@ app.post("/contact", async (req, res) => {
       message,
     });
 
-    // 2️⃣ Respond SUCCESS immediately
+    await sendContactEmail({
+      name,
+      email,
+      inquiryType,
+      subject,
+      message,
+    });
+
     res.status(201).json({
       success: true,
       message: "Message sent successfully ✅",
     });
 
-    // 3️⃣ Send email in background
-    sendContactEmail({ name, email, inquiryType, subject, message })
-      .then(() => console.log("📧 Contact email sent"))
-      .catch(err =>
-        console.error("❌ Email failed:", err.message)
-      );
-
   } catch (error) {
-    console.error("Contact error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later.",
-    });
-  }
+  console.error("CONTACT ERROR FULL:", error);
+
+  res.status(500).json({
+    success: false,
+    message: error.message || "Email failed",
+    error: error,
+  });
+}
+
 });
 
 
@@ -290,7 +288,7 @@ app.get("/search-news", async (req, res) => {
 
 
 
-/* 🔹 START SERVER */
+/* START SERVER */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
