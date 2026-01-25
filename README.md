@@ -43,7 +43,8 @@ Resend (Transactional Emails)
 
 ## Demo Video
 
-https://drive.google.com/file/d/1YVxOTwuPUhDOuJy-koVWz7UlApbeDbwC/view?usp=drive_link
+Netlify: https://newsaggregatorfrontend.netlify.app
+Youtube: https://youtu.be/VJcs4mjrN0s
 
 ## Key Learnings
 
