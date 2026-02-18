@@ -285,6 +285,119 @@ app.get("/search-news", async (req, res) => {
 });
 
 
+/* =========================
+   CHATBOT API (NEW)
+========================= */
+
+app.post("/api/chatbot", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.json({
+      reply: "❗ Please type a message.",
+      topic: null,
+    });
+  }
+
+  const text = message.toLowerCase();
+
+  /* 🔹 WEBSITE INFO / FAQ */
+if (
+  text.includes("about") ||
+  text.includes("website") ||
+  text.includes("this site") ||
+  text.includes("platform")
+) {
+  return res.json({
+    reply:
+      "This is an AI-powered News Aggregator website that provides latest headlines, category-wise news, country-specific news, e-paper access, and search functionality.",
+    topic: "about",
+  });
+}
+
+if (
+  text.includes("help") ||
+  text.includes("how can you help") ||
+  text.includes("what can you do")
+) {
+  return res.json({
+    reply:
+      "😊 I can help you with technology, sports, business news, e-paper, search, and website features.",
+    topic: "help",
+  });
+}
+
+/* 🔹 E-PAPER HELP */
+if (
+  text.includes("epaper") ||
+  text.includes("e-paper") ||
+  text.includes("newspaper") ||
+  text.includes("e news paper")
+) {
+  return res.json({
+    reply:
+      "🗞️ To read the e-paper:\n\n1️⃣ Open the E-Paper section from the website menu\n2️⃣ Select today’s edition or category\n3️⃣ Click on any article to read it in full newspaper-style format.",
+    topic: "epaper",
+  });
+}
+
+  
+
+  try {
+    /* 🔹 TECHNOLOGY NEWS */
+    if (text.includes("technology") || text.includes("tech")) {
+      const url = `https://gnews.io/api/v4/top-headlines?category=technology&lang=en&max=5&apikey=${API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const articles = (data.articles || []).slice(0, 5);
+
+      let reply = "📰 Latest Technology News:\n\n";
+
+      articles.forEach((a, i) => {
+        reply += `${i + 1}. ${a.title}\n🔗 ${a.url}\n\n`;
+      });
+
+      return res.json({
+        reply,
+        topic: "technology",
+      });
+    }
+
+/* 🔹 POSITIVE / SMALL TALK */
+if (
+  text.includes("great") ||
+  text.includes("ohh") ||
+  text.includes("nice") ||
+  text.includes("cool") ||
+  text.includes("awesome") ||
+  text.includes("thanks") ||
+  text.includes("thank you") ||
+  text === "ok" ||
+  text === "okay"
+) {
+  return res.json({
+    reply: "😊 Glad to hear that! Let me know what you’d like to explore next.",
+    topic: null,
+  });
+}
+
+
+    /* 🔹 FALLBACK */
+    return res.json({
+      reply:
+        "🤔 I can help you with technology, sports, business news, e-paper and website features.",
+      topic: null,
+    });
+
+  } catch (error) {
+    console.error("Chatbot error:", error.message);
+    return res.status(500).json({
+      reply: "⚠️ Sorry, I couldn't fetch news right now.",
+      topic: null,
+    });
+  }
+});
 
 
 

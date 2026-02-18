@@ -6,7 +6,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
-import News from "./components/News";
+
 import TopHeadlines from "./components/TopHeadlines";
 import CountryNews from "./components/CountryNews";
 import Contact from "./pages/Contact";
@@ -15,6 +15,8 @@ import EPaper from "./pages/EPaper";
 import ArticlePage from "./pages/ArticlePage";
 import SearchResults from "./pages/SearchResults";
 import ChatWidget from "./components/Chatbot/ChatWidget";
+import BecameAReporter from "./pages/BecameAReporter";
+import Home from "./pages/Home";
 
 /* 👇 Layout wrapper */
 function AppLayout() {
@@ -28,12 +30,13 @@ function AppLayout() {
       {!isEPaper && <Header />}
 
       <Routes>
-        <Route path="/" element={<News />} />
+        <Route  path="/" element={<Home />} />
         <Route path="/top-headlines/:country" element={<TopHeadlines />} />
         <Route path="/country/:iso" element={<CountryNews />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/e-paper" element={<EPaper />} />
+        <Route path="/became-a-reporter" element={<BecameAReporter />} />
         
         <Route path="/article/:id" element={<ArticlePage />} />
         <Route path="/search" element={<SearchResults />} />

@@ -11,7 +11,7 @@ const ChatWindow = ({ onClose }) => {
 
   const bottomRef = useRef(null);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
   if (!input.trim()) return;
 
   const userMsg = input;
@@ -19,17 +19,28 @@ const ChatWindow = ({ onClose }) => {
   setMessages(prev => [...prev, { from: "user", text: userMsg }]);
   setInput("");
 
-  setTimeout(() => {
-    const bot = getBotReply(userMsg, lastTopic);
+  try {
+    const res = await fetch("http://localhost:3000/api/chatbot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: userMsg }),
+    });
 
+    const bot = await res.json();
+
+    setMessages(prev => [...prev, { from: "bot", text: bot.reply }]);
+    setLastTopic(bot.topic);
+
+  } catch (err) {
     setMessages(prev => [
       ...prev,
-      { from: "bot", text: bot.reply }
+      { from: "bot", text: "⚠️ Server error. Please try again later." },
     ]);
-
-    setLastTopic(bot.topic);
-  }, 600); // thinking delay 😌
+  }
 };
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -44,9 +55,16 @@ const ChatWindow = ({ onClose }) => {
 
       <div className="chat-body">
         {messages.map((m, i) => (
-          <div key={i} className={`msg ${m.from}`}>
-            {m.text}
-          </div>
+          <div
+  className={`msg ${m.from}`}
+  dangerouslySetInnerHTML={{
+    __html: m.text.replace(
+      /(https?:\/\/[^\s]+)/g,
+      '<a href="$1" target="_blank">$1</a>'
+    )
+  }}
+/>
+
         ))}
         <div ref={bottomRef} />
       </div>

@@ -172,7 +172,12 @@ export default function Footer() {
             <div className="lg:ml-10">
               <h4 className="text-white font-semibold mb-4">For Publishers</h4>
               <ul className="space-y-3 text-sm opacity-85">
-                <li><a className="hover:underline" href="#">Become a Reporter</a></li>
+                
+                <li> 
+                <Link to="/became-a-reporter" className="hover:underline">
+                Become a Reporter
+                </Link>
+                 </li>
                 <li> 
                 <Link to="/contact" className="hover:underline">
                  Contact Us

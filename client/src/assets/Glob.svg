@@ -1,0 +1,31 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Bold Gradient -->
+    <linearGradient id="boldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00C6FF"></stop>
+      <stop offset="100%" stop-color="#0072FF"></stop>
+    </linearGradient>
+
+    <!-- Soft Glow -->
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2.5" result="blur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="blur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Globe Circle -->
+  <circle cx="100" cy="100" r="70" stroke="url(#boldGrad)" stroke-width="8" fill="none" filter="url(#softGlow)"></circle>
+
+  <!-- Vertical Longitude -->
+  <ellipse cx="100" cy="100" rx="35" ry="70" stroke="url(#boldGrad)" stroke-width="6" fill="none"></ellipse>
+
+  <!-- Horizontal Latitude -->
+  <ellipse cx="100" cy="100" rx="70" ry="28" stroke="url(#boldGrad)" stroke-width="6" fill="none"></ellipse>
+
+  <ellipse cx="100" cy="100" rx="70" ry="48" stroke="url(#boldGrad)" stroke-width="4" fill="none" opacity="0.6"></ellipse>
+
+</svg>
