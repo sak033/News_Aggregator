@@ -7,6 +7,7 @@ import {
   faGithub,
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import Logo from "../assets/Glob.svg";
 
 
 
@@ -50,7 +51,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Stay Updated with News_Aggregator!!!
+              Stay Updated with GlobNews!!!
             </h2>
             <p className="mb-8 footer-cont text-lg opacity-90">
               Get breaking news, exclusive stories, and trending content delivered to your inbox
@@ -81,7 +82,7 @@ export default function Footer() {
             </form>
 
             <p className="mt-6  text-sm opacity-80">
-              Join 100,000+ readers who trust News_Aggregator for reliable news
+              Join 100,000+ readers who trust GlobNews for reliable news
             </p>
           </div>
         </div>
@@ -95,11 +96,10 @@ export default function Footer() {
             {/* Column 1: logo + blurb */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold">
-                  N
-                </div>
+                
+                <img src={Logo} alt="News_Aggregator Logo" className="w-15 h-15" />
                 <div>
-                  <h3 className="text-lg font-semibold text-white">News_Aggregator</h3>
+                  <h3 className="text-lg font-semibold text-white">GlobNews</h3>
                   <p className="text-sm opacity-80">International News Portal</p>
                 </div>
               </div>
